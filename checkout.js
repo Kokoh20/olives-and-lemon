@@ -15,15 +15,49 @@
     applyCoupon: document.getElementById('applyCoupon'),
     placeOrder: document.getElementById('placeOrder'),
     clearCartBtn: document.getElementById('clearCartBtn'),
-    emptyCartMsg: document.getElementById('emptyCartMsg')
+    emptyCartMsg: document.getElementById('emptyCartMsg'),
+    scheduleDate: document.getElementById('scheduleDate'),
+    scheduleTime: document.getElementById('scheduleTime'),
+    tableNumber: document.getElementById('tableNumber'),
+    ecoTrackerToggle: document.getElementById('ecoTrackerToggle'),
+    ecoCupsSavedCheckout: document.getElementById('ecoCupsSavedCheckout'),
+    mysteryAddBtn: document.getElementById('mysteryAddBtn')
   };
 
   let couponValue = 0;
 
   function estimateQueueTime(count){
-    // Simple ETA: 2 minutes per item base + 3 minutes overhead
+    // Smarter ETA: base 2 min/item, plus 1 min per 3 items, plus schedule lead-in
     if(!count) return 0;
-    return Math.max(1, (count * 2) + 3);
+    const base = count * 2;
+    const congestion = Math.floor(count/3);
+    const scheduledLead = getScheduledTimestamp() ? 5 : 0; // add small buffer if scheduled
+    return Math.max(1, base + congestion + scheduledLead);
+  }
+
+  const ECO_CUP_KEY = 'eco-cups-saved-v1';
+  const getEcoCount = () => Number(localStorage.getItem(ECO_CUP_KEY)||'0');
+  const setEcoCount = (n) => localStorage.setItem(ECO_CUP_KEY, String(n));
+
+  const SCHED_KEY = 'mauiz-schedule-v1';
+  function saveSchedule(){
+    const data = {
+      date: els.scheduleDate?.value || '',
+      time: els.scheduleTime?.value || '',
+      table: els.tableNumber?.value || '',
+      eco: !!(els.ecoTrackerToggle && els.ecoTrackerToggle.checked)
+    };
+    localStorage.setItem(SCHED_KEY, JSON.stringify(data));
+  }
+  function loadSchedule(){
+    try { return JSON.parse(localStorage.getItem(SCHED_KEY)||'{}'); } catch { return {}; }
+  }
+  function getScheduledTimestamp(){
+    if(!els.scheduleDate || !els.scheduleTime) return 0;
+    const d = els.scheduleDate.value; const t = els.scheduleTime.value;
+    if(!d || !t) return 0;
+    const ts = new Date(`${d}T${t}:00`).getTime();
+    return isNaN(ts) ? 0 : ts;
   }
 
   function updatePlaceOrderState(cart){
@@ -114,6 +148,35 @@
   if(els.clearCartBtn){
     els.clearCartBtn.addEventListener('click', ()=>{
       saveCart([]);
+      render();
+    });
+  }
+
+  // Schedule and eco tracker wiring
+  (function initSchedule(){
+    const saved = loadSchedule();
+    if(els.scheduleDate && saved.date) els.scheduleDate.value = saved.date;
+    if(els.scheduleTime && saved.time) els.scheduleTime.value = saved.time;
+    if(els.tableNumber && saved.table) els.tableNumber.value = saved.table;
+    if(els.ecoTrackerToggle) els.ecoTrackerToggle.checked = !!saved.eco;
+    if(els.ecoCupsSavedCheckout) els.ecoCupsSavedCheckout.textContent = String(getEcoCount());
+
+    els.scheduleDate?.addEventListener('change', saveSchedule);
+    els.scheduleTime?.addEventListener('change', saveSchedule);
+    els.tableNumber?.addEventListener('input', saveSchedule);
+    els.ecoTrackerToggle?.addEventListener('change', ()=>{
+      saveSchedule();
+      // If toggled here, we don't increase eco count yet; it's increased when adding items in shop.js
+    });
+  })();
+
+  // Mystery drink add (adds a random product placeholder)
+  if(els.mysteryAddBtn){
+    els.mysteryAddBtn.addEventListener('click', ()=>{
+      const cart = loadCart();
+      const mystery = { id: 'mystery', name: 'Mystery Drink', price: 99, qty: 1, extras: [], notes: 'Barista choice', ecoCup: !!(els.ecoTrackerToggle && els.ecoTrackerToggle.checked) };
+      cart.push(mystery);
+      saveCart(cart);
       render();
     });
   }
