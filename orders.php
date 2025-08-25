@@ -52,4 +52,26 @@ if ($method === 'POST') {
     send_json([ 'ok' => true, 'order' => $order ]);
 }
 
+if ($method === 'PATCH' || $method === 'PUT') {
+    $payload = get_json_input();
+    $id = (string)($payload['id'] ?? '');
+    if (!$id) send_json([ 'error' => 'Missing id' ], 400);
+    $found = false;
+    foreach ($orders as &$o) {
+        if (($o['id'] ?? '') === $id) {
+            if (isset($payload['status'])) $o['status'] = (string)$payload['status'];
+            if (isset($payload['customer'])) $o['customer'] = (array)$payload['customer'];
+            if (isset($payload['items'])) $o['items'] = (array)$payload['items'];
+            if (isset($payload['totals'])) $o['totals'] = (array)$payload['totals'];
+            $found = true; break;
+        }
+    }
+    unset($o);
+    if (!$found) send_json([ 'error' => 'Order not found' ], 404);
+    if (!write_json_atomic($dbFile, $orders)) {
+        send_json([ 'error' => 'Failed to update order' ], 500);
+    }
+    send_json([ 'ok' => true ]);
+}
+
 send_json([ 'error' => 'Method not allowed' ], 405);

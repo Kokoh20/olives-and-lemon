@@ -1,12 +1,5 @@
 (function(){
-  const products = [
-    { id: 'Macchiato', name: 'Macchiato', price: 99, category: 'rice-bowl', image: 'assets/images/coffee7.jpg', moods:['energize'] },
-    { id: 'Chocolate Donuts', name: 'Chocolate Donuts', price: 99, category: 'rice-bowl', image: 'assets/images/dessert3.jpg', moods:['comfort'] },
-    { id: 'Salted Caramel', name: 'Salted Caramel', price: 88, category: 'rice-bowl', image: 'assets/images/drink1.jpg', moods:['chill','comfort'] },
-    { id: 'Yema Cake', name: 'Yema Cake', price: 99, category: 'rice-bowl', image: 'assets/images/cake16.jpg', moods:['comfort'] },
-    { id: 'Latte', name: 'Latte', price: 99, category: 'rice-bowl', image: 'assets/images/coffee6.jpg', moods:['energize','chill'] },
-    { id: 'Mini Red Velvel Cake', name: 'Mini Red Velvel Cake', price: 99, category: 'rice-bowl', image: 'assets/images/cake11.jpg', moods:['comfort'] }
-  ];
+  let products = [];
 
   const extrasCatalog = [
     { key: 'kimchi', name: 'kimchi', price: 15 },
@@ -34,6 +27,12 @@
     ecoCupInput: document.getElementById('ecoCupInput'),
     modalLivePrice: document.getElementById('modalLivePrice')
   };
+
+  async function fetchJSON(url){
+    const res = await fetch(url);
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    return res.json();
+  }
 
   // Cart state
   const CART_KEY = 'mauiz-cart-v1';
@@ -235,7 +234,13 @@
 
   
   if(els.ecoCupsSaved){ els.ecoCupsSaved.textContent = String(getEcoCount()); }
-
-  renderProducts('all','', 'all');
-  cartTotals();
+  
+  (async function init(){
+    try {
+      const data = await fetchJSON('products.php');
+      products = data.products || [];
+    } catch(e) { products = []; }
+    renderProducts('all','', 'all');
+    cartTotals();
+  })();
 })();
