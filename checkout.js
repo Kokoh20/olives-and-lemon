@@ -13,7 +13,8 @@
     cartTotal: document.getElementById('cartTotal'),
     couponInput: document.getElementById('couponInput'),
     applyCoupon: document.getElementById('applyCoupon'),
-    placeOrder: document.getElementById('placeOrder')
+    placeOrder: document.getElementById('placeOrder'),
+    clearCart: document.getElementById('clearCart')
   };
 
   let couponValue = 0;
@@ -32,6 +33,14 @@
     els.payable.textContent = money(total);
     els.cartCount.textContent = count;
     els.cartTotal.textContent = money(total);
+
+    // Update place order button label and disabled state
+    if(els.placeOrder){
+      const etaMin = estimateQueueTime(count, 2, { open: 9, close: 20 });
+      els.placeOrder.textContent = count>0 ? `PLACE ORDER • Ready in ~${etaMin} min` : 'PLACE ORDER';
+      els.placeOrder.disabled = count===0;
+      els.placeOrder.classList.toggle('disabled', count===0);
+    }
   }
 
   function render(){
@@ -87,10 +96,28 @@
   });
 
   els.placeOrder.addEventListener('click', ()=>{
-    alert('Thank you! This demo confirms the order locally. Integrate backend to process payments and delivery.');
+    const cart = loadCart();
+    const etaMin = estimateQueueTime(cart.length, 2, { open: 9, close: 20 });
+    alert(`Thank you! Your order is placed. Estimated ready in ~${etaMin} min. This is a demo; integrate backend to process payments and delivery.`);
     localStorage.removeItem(CART_KEY);
     window.location.href = 'store.html';
   });
+
+  // Clear cart
+  if(els.clearCart){
+    els.clearCart.addEventListener('click', ()=>{
+      localStorage.removeItem(CART_KEY);
+      render();
+    });
+  }
+
+  // Simple queue time estimator similar to provided snippet
+  function estimateQueueTime(cartLen, kitchenLoad, schedule){
+    const perItemMin = 3; // rough estimate per item
+    const baseQueue = Math.max(0, kitchenLoad || 0);
+    const total = (cartLen * perItemMin) + (baseQueue * 2);
+    return Math.max(2, Math.min(45, Math.round(total)));
+  }
 
   render();
 })();
