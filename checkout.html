@@ -29,8 +29,12 @@
 
       <div class="row g-4">
         <div class="col-lg-7">
-          <h2 class="section-title" style="margin-top:0">Order Summary</h2>
+          <div class="d-flex align-items-center justify-content-between" style="margin-top:0">
+            <h2 class="section-title m-0">Your Cart</h2>
+            <button class="btn btn-link btn-sm text-muted" id="clearCartBtn" type="button">Clear</button>
+          </div>
           <div id="orderList" class="vstack gap-3"></div>
+          <p id="emptyCartMsg" class="text-muted small" style="display:none;">Your cart is empty. Add a drink to begin.</p>
 
           <div class="card mt-3">
             <div class="card-body">
@@ -68,6 +72,10 @@
       <button class="checkout" id="placeOrder" style="cursor: pointer;">PLACE ORDER</button>
       <div class="total">₱ <span id="cartTotal">0.00</span></div>
     </div>
+
+    <footer class="container pb-4 small text-muted">
+      <div class="border-top pt-2">Demo only. Replace alert() with API calls (e.g., /orders).</div>
+    </footer>
 
     <script src="checkout.js"></script>
   </body>

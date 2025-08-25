@@ -13,10 +13,30 @@
     cartTotal: document.getElementById('cartTotal'),
     couponInput: document.getElementById('couponInput'),
     applyCoupon: document.getElementById('applyCoupon'),
-    placeOrder: document.getElementById('placeOrder')
+    placeOrder: document.getElementById('placeOrder'),
+    clearCartBtn: document.getElementById('clearCartBtn'),
+    emptyCartMsg: document.getElementById('emptyCartMsg')
   };
 
   let couponValue = 0;
+
+  function estimateQueueTime(count){
+    // Simple ETA: 2 minutes per item base + 3 minutes overhead
+    if(!count) return 0;
+    return Math.max(1, (count * 2) + 3);
+  }
+
+  function updatePlaceOrderState(cart){
+    const itemCount = cart.reduce((s,i)=> s + (i.qty||0), 0);
+    const disabled = itemCount === 0;
+    els.placeOrder.disabled = disabled;
+    if(disabled){
+      els.placeOrder.textContent = 'PLACE ORDER';
+    } else {
+      const eta = estimateQueueTime(itemCount);
+      els.placeOrder.textContent = `Place Order • Ready in ~${eta} min`;
+    }
+  }
 
   function calc(cart){
     let sub = 0; let count = 0;
@@ -63,6 +83,10 @@
     els.orderList.querySelectorAll('[data-plus]').forEach(btn=> btn.addEventListener('click', ()=> changeQty(+btn.getAttribute('data-plus'), +1)));
     els.orderList.querySelectorAll('[data-remove]').forEach(btn=> btn.addEventListener('click', ()=> removeItem(+btn.getAttribute('data-remove'))));
 
+    // Empty message visibility
+    if(els.emptyCartMsg){ els.emptyCartMsg.style.display = cart.length ? 'none' : 'block'; }
+
+    updatePlaceOrderState(cart);
     calc(cart);
   }
 
@@ -79,18 +103,30 @@
     saveCart(cart); render();
   }
 
-  els.applyCoupon.addEventListener('click', ()=>{
-    const code = (els.couponInput.value || '').trim().toUpperCase();
-    
-    if(code === 'PROMO10') couponValue = 10; else if(code === 'PROMO20') couponValue = 20; else couponValue = 0;
-    render();
-  });
+  if(els.applyCoupon){
+    els.applyCoupon.addEventListener('click', ()=>{
+      const code = (els.couponInput.value || '').trim().toUpperCase();
+      if(code === 'PROMO10') couponValue = 10; else if(code === 'PROMO20') couponValue = 20; else couponValue = 0;
+      render();
+    });
+  }
 
-  els.placeOrder.addEventListener('click', ()=>{
-    alert('Thank you! This demo confirms the order locally. Integrate backend to process payments and delivery.');
-    localStorage.removeItem(CART_KEY);
-    window.location.href = 'store.html';
-  });
+  if(els.clearCartBtn){
+    els.clearCartBtn.addEventListener('click', ()=>{
+      saveCart([]);
+      render();
+    });
+  }
+
+  if(els.placeOrder){
+    els.placeOrder.addEventListener('click', ()=>{
+      const cart = loadCart();
+      if(!cart.length) return;
+      alert('Thank you! This demo confirms the order locally. Integrate backend to process payments and delivery.');
+      localStorage.removeItem(CART_KEY);
+      window.location.href = 'store.html';
+    });
+  }
 
   render();
 })();
