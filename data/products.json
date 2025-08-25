@@ -1,0 +1,8 @@
+{
+  "beef-bulgogi": { "id": "beef-bulgogi", "name": "Beef Bulgogi", "price": 99, "category": "rice-bowl", "image": "assets/images/coffee7.jpg", "moods": ["energize"] },
+  "chicken-teriyaki": { "id": "chicken-teriyaki", "name": "Chicken Teriyaki", "price": 99, "category": "rice-bowl", "image": "assets/images/dessert3.jpg", "moods": ["comfort"] },
+  "pork-samyeoupsal": { "id": "pork-samyeoupsal", "name": "Pork Samyeoupsal", "price": 88, "category": "rice-bowl", "image": "assets/images/drink1.jpg", "moods": ["chill","comfort"] },
+  "spicy-korean-wings": { "id": "spicy-korean-wings", "name": "Spicy Korean Chicken Wings", "price": 99, "category": "rice-bowl", "image": "assets/images/cake16.jpg", "moods": ["energize"] },
+  "spicy-korean-dumplings": { "id": "spicy-korean-dumplings", "name": "Spicy Korean Dumplings", "price": 99, "category": "rice-bowl", "image": "assets/images/coffee6.jpg", "moods": ["comfort"] },
+  "spicy-korean-pork-ribs": { "id": "spicy-korean-pork-ribs", "name": "Spicy Korean Pork Ribs", "price": 99, "category": "rice-bowl", "image": "assets/images/cake11.jpg", "moods": ["comfort"] }
+}
