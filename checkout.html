@@ -52,12 +52,25 @@
           <h2 class="section-title" style="margin-top:0">Order Details</h2>
           <div class="vstack gap-3">
             <div class="card"><div class="card-body">
-              <div class="form-check"><input class="form-check-input" type="radio" name="otype" id="o1"><label class="form-check-label" for="o1">ADVANCE ORDER FOR DINE IN</label></div>
-              <div class="form-check"><input class="form-check-input" type="radio" name="otype" id="o2"><label class="form-check-label" for="o2">PRE-ORDER</label></div>
-              <div class="form-check"><input class="form-check-input" type="radio" name="otype" id="o3"><label class="form-check-label" for="o3">PICKUP</label></div>
-              <div class="form-check"><input class="form-check-input" type="radio" name="otype" id="o4"><label class="form-check-label" for="o4">DELIVERY</label></div>
+              <div class="mb-3">
+                <label for="customerName" class="form-label">Full Name</label>
+                <input id="customerName" type="text" class="form-control" placeholder="Juan Dela Cruz">
+              </div>
+              <div class="mb-3">
+                <label for="phoneNumber" class="form-label">Phone Number</label>
+                <input id="phoneNumber" type="tel" class="form-control" placeholder="0917 123 4567">
+              </div>
+              <div class="mb-3">
+                <label for="deliveryAddress" class="form-label">Address (for Delivery)</label>
+                <textarea id="deliveryAddress" class="form-control" rows="2" placeholder="Street, Barangay, City"></textarea>
+              </div>
+              <div class="mb-2 fw-bold">Order Type</div>
+              <div class="form-check"><input class="form-check-input" type="radio" name="otype" id="o1" value="dine-in"><label class="form-check-label" for="o1">ADVANCE ORDER FOR DINE IN</label></div>
+              <div class="form-check"><input class="form-check-input" type="radio" name="otype" id="o2" value="pre-order"><label class="form-check-label" for="o2">PRE-ORDER</label></div>
+              <div class="form-check"><input class="form-check-input" type="radio" name="otype" id="o3" value="pickup" checked><label class="form-check-label" for="o3">PICKUP</label></div>
+              <div class="form-check"><input class="form-check-input" type="radio" name="otype" id="o4" value="delivery"><label class="form-check-label" for="o4">DELIVERY</label></div>
             </div></div>
-            <a href="store.html" class="btn btn-primary btn-lg">Continue Shopping</a>
+            <a href="store.html" class="btn btn-outline-secondary btn-lg">Continue Shopping</a>
           </div>
         </div>
       </div>

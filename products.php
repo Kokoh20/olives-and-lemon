@@ -1,6 +1,6 @@
 <?php
 declare(strict_types=1);
-require __DIR__ . '/_utils.php';
+require __DIR__ . '/util.php';
 
 
 $products = [
