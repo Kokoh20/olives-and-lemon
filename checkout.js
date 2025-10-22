@@ -87,9 +87,47 @@
   });
 
   els.placeOrder.addEventListener('click', ()=>{
-    alert('Thank you! This demo confirms the order locally. Integrate backend to process payments and delivery.');
-    localStorage.removeItem(CART_KEY);
-    window.location.href = 'store.html';
+    const cart = loadCart();
+    if (cart.length === 0) {
+      alert('Your cart is empty.');
+      return;
+    }
+    const name = document.getElementById('customerName')?.value.trim() || '';
+    const phone = document.getElementById('phoneNumber')?.value.trim() || '';
+    const address = document.getElementById('deliveryAddress')?.value.trim() || '';
+    const type = document.querySelector('input[name="otype"]:checked')?.value || 'pickup';
+
+    if (!name || !phone) {
+      alert('Please provide your name and phone number.');
+      return;
+    }
+
+    const subtotal = parseFloat(els.subtotal.textContent) || 0;
+    const discount = parseFloat(els.discount.textContent) || 0;
+    const payable = parseFloat(els.payable.textContent) || 0;
+
+    const payload = {
+      customer: { name, phone, address, type },
+      items: cart,
+      totals: { subtotal, discount, payable }
+    };
+
+    fetch('orders.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    }).then(r => r.json()).then(data =>{
+      if (data && data.ok) {
+        alert('Thank you! Your order was placed.');
+        localStorage.removeItem(CART_KEY);
+        window.location.href = 'store.html';
+      } else {
+        alert(data && data.error ? 'Failed: ' + data.error : 'Failed to place order');
+      }
+    }).catch(err =>{
+      console.error(err);
+      alert('Network error while placing order.');
+    });
   });
 
   render();
