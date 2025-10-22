@@ -3,6 +3,7 @@
   const loadCart = () => { try { return JSON.parse(localStorage.getItem(CART_KEY) || '[]'); } catch { return []; } };
   const saveCart = (items) => localStorage.setItem(CART_KEY, JSON.stringify(items));
   const money = (n) => (n||0).toFixed(2);
+  const unitPrice = (item) => item.variant ? item.variant.price : item.price;
 
   const els = {
     orderList: document.getElementById('orderList'),
@@ -22,7 +23,7 @@
     let sub = 0; let count = 0;
     for(const item of cart){
       const extrasTotal = (item.extras||[]).reduce((s,e)=> s + (e.price * e.qty), 0);
-      sub += (item.price + extrasTotal) * item.qty;
+      sub += (unitPrice(item) + extrasTotal) * item.qty;
       count += item.qty;
     }
     const discount = Math.min(couponValue, sub);
@@ -38,6 +39,7 @@
     const cart = loadCart();
     els.orderList.innerHTML = cart.map((item, idx)=>{
       const extras = (item.extras||[]).map(e=> e.qty>0 ? `<span class="badge text-bg-light me-1">${e.name}</span>` : '').join(' ');
+      const size = item.variant ? `<span class="badge text-bg-secondary ms-2">${item.variant.name}</span>` : '';
       return `
         <div class="card">
           <div class="card-body d-flex align-items-start gap-3">
@@ -48,8 +50,8 @@
                   <button type="button" class="btn btn-outline-secondary" disabled>${item.qty}</button>
                   <button type="button" class="btn btn-outline-secondary" data-plus="${idx}">+</button>
                 </div>
-                <div class="ms-2 fw-bold">${item.name}</div>
-                <div class="ms-auto">₱ ${(item.price).toFixed(2)}</div>
+                <div class="ms-2 fw-bold">${item.name}${size}</div>
+                <div class="ms-auto">₱ ${(unitPrice(item)).toFixed(2)}</div>
               </div>
               <div class="text-muted small">${extras || ''}</div>
               ${item.notes? `<div class="small mt-1">Notes: ${item.notes}</div>`:''}
