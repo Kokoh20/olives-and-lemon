@@ -1,12 +1,5 @@
 (function(){
-  const products = [
-    { id: 'Macchiato', name: 'Macchiato', price: 99, category: 'rice-bowl', image: 'assets/images/coffee7.jpg' },
-    { id: 'Chocolate Donuts', name: 'Chocolate Donuts', price: 99, category: 'rice-bowl', image: 'assets/images/dessert3.jpg' },
-    { id: 'Salted Caramel', name: 'Salted Caramel', price: 88, category: 'rice-bowl', image: 'assets/images/drink1.jpg' },
-    { id: 'Yema Cake', name: 'Yema Cake', price: 99, category: 'rice-bowl', image: 'assets/images/cake16.jpg' },
-    { id: 'Latte', name: 'Latte', price: 99, category: 'rice-bowl', image: 'assets/images/coffee6.jpg' },
-    { id: 'Mini Red Velvel Cake', name: 'Mini Red Velvel Cake', price: 99, category: 'rice-bowl', image: 'assets/images/cake11.jpg' }
-  ];
+  let products = [];
 
   const extrasCatalog = [
     { key: 'kimchi', name: 'kimchi', price: 15 },
@@ -66,6 +59,28 @@
     els.productsGrid.querySelectorAll('[data-add]').forEach(btn =>{
       btn.addEventListener('click', () => openModal(btn.getAttribute('data-add')));
     });
+  }
+
+  async function loadProducts(){
+    const fallback = [
+      { id: 'macchiato', name: 'Macchiato', price: 99, category: 'rice-bowl', image: 'assets/images/coffee7.jpg' },
+      { id: 'chocolate-donuts', name: 'Chocolate Donuts', price: 99, category: 'rice-bowl', image: 'assets/images/dessert3.jpg' },
+      { id: 'salted-caramel', name: 'Salted Caramel', price: 88, category: 'rice-bowl', image: 'assets/images/drink1.jpg' },
+      { id: 'yema-cake', name: 'Yema Cake', price: 99, category: 'rice-bowl', image: 'assets/images/cake16.jpg' },
+      { id: 'latte', name: 'Latte', price: 99, category: 'rice-bowl', image: 'assets/images/coffee6.jpg' },
+      { id: 'mini-red-velvet-cake', name: 'Mini Red Velvet Cake', price: 99, category: 'rice-bowl', image: 'assets/images/cake11.jpg' }
+    ];
+    try {
+      const res = await fetch('products.php', { headers: { 'Accept': 'application/json' } });
+      if(!res.ok) throw new Error('Failed to load products');
+      const data = await res.json();
+      products = Array.isArray(data.products) ? data.products : fallback;
+    } catch(err){
+      console.warn('Using fallback products:', err);
+      products = fallback;
+    }
+    const active = document.querySelector('.chip.active')?.getAttribute('data-filter') || 'all';
+    renderProducts(active, els.searchInput.value || '');
   }
 
   
@@ -180,6 +195,8 @@
   });
 
   
+  // Initial render and load
   renderProducts('all','');
+  loadProducts();
   cartTotals();
 })();
