@@ -49,21 +49,12 @@
 
       <section id="categoryView" class="category-view">
         <h2 class="section-title">Categories</h2>
-        <div class="categories-grid">
-          <article class="category-card" data-category="rice-bowl">
-            <div class="icon"><i class="fa-solid fa-bowl-food"></i></div>
-            <h3>Menu</h3>
-            <p class="muted"><span class="badge bg-light text-dark">6 products</span></p>
-          </article>
-        </div>
+        <div id="categoriesGrid" class="categories-grid"></div>
       </section>
 
       <section id="productView" class="product-view d-none">
         <h2 class="section-title">Products</h2>
-        <div class="filter-bar">
-          <div class="chip active" data-filter="all">All</div>
-          <div class="chip" data-filter="rice-bowl">Rice Bowl</div>
-        </div>
+        <div id="filterBar" class="filter-bar"></div>
         <div id="productsGrid" class="products-grid"></div>
       </section>
     </main>
@@ -81,6 +72,10 @@
           <button class="icon-btn" id="modalClose" aria-label="Close"><i class="fa-solid fa-xmark"></i></button>
         </div>
         <div class="modal-body">
+          <div id="variantSection" class="variants d-none">
+            <div class="extras-title">Choose Size</div>
+            <div id="variantsList" class="variants-list"></div>
+          </div>
           <div class="qty-row">
             <button class="qty-btn" id="qtyMinus">-</button>
             <span id="qtyValue">1</span>
