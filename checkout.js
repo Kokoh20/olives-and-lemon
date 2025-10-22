@@ -87,9 +87,50 @@
   });
 
   els.placeOrder.addEventListener('click', ()=>{
-    alert('Thank you! This demo confirms the order locally. Integrate backend to process payments and delivery.');
-    localStorage.removeItem(CART_KEY);
-    window.location.href = 'store.html';
+    const cart = loadCart();
+    if(cart.length === 0){
+      alert('Your cart is empty.');
+      return;
+    }
+    const payload = {
+      customer: {
+        name: 'Guest',
+        phone: '',
+        address: '',
+        type: 'pickup'
+      },
+      items: cart.map(item=>({
+        id: item.id,
+        name: item.name,
+        price: item.price,
+        qty: item.qty,
+        extras: item.extras||[],
+        notes: item.notes||''
+      })),
+      totals: {
+        subtotal: parseFloat(els.subtotal.textContent || '0'),
+        discount: parseFloat(els.discount.textContent || '0'),
+        payable: parseFloat(els.payable.textContent || '0')
+      }
+    };
+    fetch('orders.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify(payload)
+    }).then(async (res)=>{
+      if(!res.ok){
+        const err = await res.json().catch(()=>({error:'Failed to place order'}));
+        throw new Error(err.error||'Failed to place order');
+      }
+      return res.json();
+    }).then((data)=>{
+      alert('Thank you! Your order was placed.');
+      localStorage.removeItem(CART_KEY);
+      window.location.href = 'store.html';
+    }).catch((err)=>{
+      console.error(err);
+      alert('Sorry, there was a problem placing your order.');
+    });
   });
 
   render();
