@@ -118,9 +118,13 @@
       body: JSON.stringify(payload)
     }).then(r => r.json()).then(data =>{
       if (data && data.ok) {
-        alert('Thank you! Your order was placed.');
         localStorage.removeItem(CART_KEY);
-        window.location.href = 'store.html';
+        const id = data.order && data.order.id;
+        if (id) {
+          window.location.href = 'track.html?id=' + encodeURIComponent(id);
+        } else {
+          window.location.href = 'store.html';
+        }
       } else {
         alert(data && data.error ? 'Failed: ' + data.error : 'Failed to place order');
       }
